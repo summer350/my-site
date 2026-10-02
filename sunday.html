@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>星期日 · 你为什么要平A</title>
+<style>
+  :root{
+    --bg:#0a0a0f;
+    --bg-soft:#12121c;
+    --gold:#e8c873;
+    --gold-bright:#fff2b3;
+    --halo:#ffb84d;
+    --ink:#f0e8d4;
+    --ink-soft:#9b9176;
+    --border:rgba(232,200,115,.18);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"PingFang SC","Microsoft YaHei",serif;
+    overflow-x:hidden;
+    line-height:1.8;
+    -webkit-font-smoothing:antialiased;
+  }
+  body::before{
+    content:"";
+    position:fixed;inset:0;
+    background:
+      radial-gradient(ellipse at 50% 0%,rgba(255,184,77,.08),transparent 60%),
+      radial-gradient(ellipse at 30% 80%,rgba(232,200,115,.06),transparent 50%);
+    pointer-events:none;
+    z-index:0;
+  }
+
+  /* 电影黑边 */
+  .letterbox{position:fixed;left:0;right:0;height:44px;background:#000;z-index:50;pointer-events:none}
+  .letterbox.top{top:0}
+  .letterbox.bottom{bottom:0}
+
+  /* 粒子 */
+  #particles{position:fixed;inset:0;z-index:1;pointer-events:none}
+
+  /* 导航 */
+  nav{
+    position:fixed;top:44px;left:0;right:0;
+    z-index:40;
+    padding:20px 6vw;
+    display:flex;justify-content:space-between;align-items:center;
+    background:linear-gradient(180deg,rgba(0,0,0,.5),transparent);
+    backdrop-filter:blur(4px);
+  }
+  .logo{
+    font-size:13px;letter-spacing:.4em;color:var(--gold);
+    text-transform:uppercase;font-weight:600;
+  }
+  .nav-links{display:flex;gap:32px}
+  .nav-links a{
+    color:var(--ink-soft);text-decoration:none;font-size:12px;
+    letter-spacing:.2em;transition:color .3s;
+  }
+  .nav-links a:hover{color:var(--gold)}
+
+  /* HERO */
+  .hero{
+    position:relative;
+    min-height:100vh;
+    display:flex;flex-direction:column;justify-content:center;align-items:center;
+    text-align:center;
+    padding:0 6vw;
+    overflow:hidden;
+    z-index:2;
+  }
+  .hero-bg{
+    position:absolute;inset:0;
+    background:
+      radial-gradient(circle at 50% 40%,rgba(232,200,115,.14),transparent 50%),
+      radial-gradient(circle at 50% 80%,rgba(255,184,77,.08),transparent 60%);
+    z-index:-1;
+  }
+  .hero-bg::before{
+    content:"";
+    position:absolute;inset:0;
+    background:
+      repeating-linear-gradient(0deg,rgba(255,255,255,.02) 0 1px,transparent 1px 4px);
+    mix-blend-mode:overlay;
+  }
+  .kicker{
+    font-size:11px;letter-spacing:.6em;color:var(--gold);
+    text-transform:uppercase;margin-bottom:32px;
+    opacity:0;animation:rise 1.4s .2s forwards;
+  }
+  .kicker::before,.kicker::after{
+    content:"";display:inline-block;width:60px;height:1px;
+    background:var(--gold);vertical-align:middle;margin:0 24px;
+    opacity:.5;
+  }
+  .hero h1{
+    font-family:"STSong","SimSun",serif;
+    font-size:clamp(48px,11vw,168px);
+    font-weight:900;
+    line-height:1;
+    letter-spacing:.05em;
+    margin-bottom:28px;
+    background:linear-gradient(180deg,#fff2b3 0%,#e8c873 50%,#a8884a 100%);
+    -webkit-background-clip:text;background-clip:text;
+    -webkit-text-fill-color:transparent;
+    text-shadow:0 0 80px rgba(232,200,115,.2);
+    opacity:0;animation:rise 1.6s .5s forwards;
+  }
+  .hero h1 .sub{
+    display:block;
+    font-size:.45em;
+    font-weight:400;
+    letter-spacing:.15em;
+    margin-top:18px;
+    color:var(--ink);
+    -webkit-text-fill-color:var(--ink);
+  }
+  .hero .q{
+    font-family:"STSong",serif;
+    font-size:clamp(20px,2.4vw,28px);
+    font-style:italic;
+    color:var(--gold-bright);
+    max-width:760px;
+    margin:0 auto;
+    opacity:0;animation:rise 1.6s .9s forwards;
+  }
+  .hero .q::before{
+    content:"「";color:var(--gold);
+  }
+  .hero .q::after{
+    content:"」";color:var(--gold);
+  }
+  .scroll-hint{
+    position:absolute;bottom:90px;left:50%;transform:translateX(-50%);
+    color:var(--ink-soft);font-size:10px;letter-spacing:.5em;
+    opacity:0;animation:rise 1s 1.4s forwards,bob 2.4s 1.4s infinite;
+  }
+  .scroll-hint::after{
+    content:"";display:block;width:1px;height:50px;
+    background:linear-gradient(180deg,var(--gold),transparent);
+    margin:14px auto 0;
+  }
+
+  @keyframes rise{
+    from{opacity:0;transform:translateY(36px)}
+    to{opacity:1;transform:translateY(0)}
+  }
+  @keyframes bob{
+    0%,100%{transform:translate(-50%,0)}
+    50%{transform:translate(-50%,10px)}
+  }
+
+  /* 通用章节 */
+  section{
+    position:relative;
+    padding:140px 6vw;
+    z-index:2;
+  }
+  .chapter{
+    font-size:11px;letter-spacing:.6em;color:var(--gold);
+    text-transform:uppercase;margin-bottom:20px;
+  }
+  .chapter::before{
+    content:"";display:inline-block;width:50px;height:1px;
+    background:var(--gold);vertical-align:middle;margin-right:20px;
+  }
+  h2{
+    font-family:"STSong",serif;
+    font-size:clamp(32px,5.5vw,64px);
+    font-weight:700;
+    letter-spacing:.02em;
+    line-height:1.15;
+    margin-bottom:60px;
+  }
+  h2 em{font-style:italic;color:var(--gold)}
+
+  /* 角色简介 */
+  .intro{
+    max-width:1200px;margin:0 auto;
+    display:grid;grid-template-columns:1fr 1.2fr;gap:100px;align-items:center;
+  }
+  .portrait{
+    position:relative;
+    aspect-ratio:3/4;
+    border:1px solid var(--border);
+    background:
+      linear-gradient(180deg,rgba(232,200,115,.06),transparent),
+      radial-gradient(ellipse at 50% 30%,rgba(255,184,77,.18),transparent 60%),
+      var(--bg-soft);
+    overflow:hidden;
+    box-shadow:0 30px 80px -30px rgba(0,0,0,.8),0 0 60px rgba(232,200,115,.08);
+  }
+  .portrait::before{
+    content:"";
+    position:absolute;top:50%;left:50%;
+    width:60%;aspect-ratio:1;
+    transform:translate(-50%,-50%);
+    background:
+      conic-gradient(from 0deg,transparent 0deg,rgba(232,200,115,.12) 60deg,transparent 120deg,rgba(255,184,77,.12) 240deg,transparent 300deg);
+    border-radius:50%;
+    filter:blur(20px);
+    animation:spin 30s linear infinite;
+  }
+  .portrait::after{
+    content:"SUNDAY";
+    position:absolute;top:24px;left:24px;
+    font-size:11px;letter-spacing:.4em;color:var(--gold);
+    opacity:.7;
+  }
+  .portrait .symbol{
+    position:absolute;top:50%;left:50%;
+    transform:translate(-50%,-50%);
+    text-align:center;
+  }
+  .portrait .symbol .wing{
+    font-size:120px;
+    color:var(--gold);
+    text-shadow:0 0 40px rgba(232,200,115,.5);
+    animation:float 6s ease-in-out infinite;
+  }
+  .portrait .symbol .name{
+    font-family:"STSong",serif;
+    font-size:24px;
+    letter-spacing:.3em;
+    color:var(--ink);
+    margin-top:24px;
+  }
+  @keyframes float{
+    0%,100%{transform:translateY(0)}
+    50%{transform:translateY(-12px)}
+  }
+  @keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+
+  .intro-text p{
+    color:var(--ink-soft);font-size:17px;margin-bottom:22px;
+  }
+  .intro-text strong{color:var(--gold-bright);font-weight:600}
+  .intro-text .quote{
+    font-family:"STSong",serif;
+    font-style:italic;
+    color:var(--gold);
+    font-size:19px;
+    border-left:2px solid var(--gold);
+    padding-left:24px;
+    margin:32px 0;
+  }
+
+  /* 梗的解析 */
+  .meme-grid{
+    max-width:1200px;margin:0 auto;
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:28px;
+  }
+  .meme-card{
+    position:relative;
+    background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.01));
+    border:1px solid var(--border);
+    padding:36px 30px;
+    overflow:hidden;
+    transition:transform .5s cubic-bezier(.2,.7,.2,1),border-color .4s,box-shadow .5s;
+  }
+  .meme-card::before{
+    content:"";
+    position:absolute;top:-50%;left:-50%;width:200%;height:200%;
+    background:radial-gradient(circle at center,rgba(232,200,115,.1),transparent 40%);
+    opacity:0;transition:opacity .6s;
+    pointer-events:none;
+  }
+  .meme-card:hover{
+    transform:translateY(-8px);
+    border-color:rgba(232,200,115,.5);
+    box-shadow:0 30px 60px -20px rgba(0,0,0,.6),0 0 40px rgba(232,200,115,.08);
+  }
+  .meme-card:hover::before{opacity:1}
+  .meme-card .num{
+    font-family:"Times New Roman",serif;
+    font-style:italic;
+    font-size:36px;
+    color:var(--gold);
+    opacity:.5;
+    margin-bottom:18px;
+  }
+  .meme-card h4{
+    font-family:"STSong",serif;
+    font-size:22px;font-weight:700;
+    color:#fff2b3;margin-bottom:18px;
+  }
+  .meme-card p{color:var(--ink-soft);font-size:14px;line-height:1.85}
+  .meme-card .tag{
+    display:inline-block;
+    font-size:10px;letter-spacing:.3em;
+    color:var(--gold);
+    border:1px solid var(--gold);
+    padding:4px 10px;
+    margin-bottom:18px;
+    text-transform:uppercase;
+  }
+
+  /* 对白场景 */
+  .dialogue{
+    max-width:1000px;margin:0 auto;
+    padding:80px 0;
+    position:relative;
+  }
+  .dialogue::before,.dialogue::after{
+    content:"";position:absolute;left:0;right:0;height:1px;
+    background:linear-gradient(90deg,transparent,var(--border),transparent);
+  }
+  .dialogue::before{top:0}
+  .dialogue::after{bottom:0}
+  .dialogue .line{
+    margin-bottom:36px;
+    opacity:0;transform:translateY(20px);
+    transition:opacity .8s,transform .8s;
+  }
+  .dialogue .line.in{opacity:1;transform:none}
+  .dialogue .speaker{
+    font-family:"STSong",serif;
+    font-size:14px;letter-spacing:.3em;
+    color:var(--gold);
+    margin-bottom:10px;
+  }
+  .dialogue .text{
+    font-family:"STSong",serif;
+    font-size:clamp(18px,2vw,22px);
+    color:var(--ink);
+    font-style:italic;
+    padding-left:24px;
+    border-left:1px solid var(--border);
+  }
+
+  /* 收尾 */
+  .finale{
+    text-align:center;
+    padding:140px 6vw 120px;
+    position:relative;
+    z-index:2;
+  }
+  .finale .mark{
+    font-size:48px;
+    color:var(--gold);
+    margin-bottom:24px;
+    text-shadow:0 0 40px rgba(232,200,115,.5);
+  }
+  .finale h2{
+    font-family:"STSong",serif;
+    font-size:clamp(40px,7vw,96px);
+    margin-bottom:32px;
+    background:linear-gradient(180deg,#fff2b3,#e8c873,#a8884a);
+    -webkit-background-clip:text;background-clip:text;
+    -webkit-text-fill-color:transparent;
+  }
+  .finale p{
+    color:var(--ink-soft);font-size:14px;letter-spacing:.3em;
+    text-transform:uppercase;
+  }
+
+  footer{
+    text-align:center;
+    padding:60px 6vw 100px;
+    border-top:1px solid var(--border);
+    position:relative;z-index:2;
+  }
+  footer .end{
+    font-family:"Times New Roman",serif;font-style:italic;
+    color:var(--gold);font-size:18px;letter-spacing:.2em;
+    margin-bottom:12px;
+  }
+  footer p{color:var(--ink-soft);font-size:11px;letter-spacing:.3em}
+
+  /* 滚动出现 */
+  .reveal{opacity:0;transform:translateY(40px);transition:opacity 1s cubic-bezier(.2,.7,.2,1),transform 1s cubic-bezier(.2,.7,.2,1)}
+  .reveal.in{opacity:1;transform:none}
+  .reveal.d1{transition-delay:.1s}
+  .reveal.d2{transition-delay:.2s}
+  .reveal.d3{transition-delay:.3s}
+  .reveal.d4{transition-delay:.4s}
+
+  /* 视差光晕 */
+  .glow{
+    position:absolute;border-radius:50%;
+    filter:blur(90px);opacity:.4;
+    pointer-events:none;z-index:1;
+  }
+  .glow.g1{width:500px;height:500px;background:rgba(232,200,115,.3);top:10%;left:-10%}
+  .glow.g2{width:400px;height:400px;background:rgba(255,184,77,.2);bottom:10%;right:-8%}
+
+  @media (max-width:768px){
+    .intro{grid-template-columns:1fr;gap:60px}
+    .nav-links{display:none}
+    .letterbox{height:28px}
+    section{padding:100px 6vw}
+    .portrait{max-width:400px;margin:0 auto}
+  }
+</style>
+</head>
+<body>
+
+<canvas id="particles"></canvas>
+<div class="letterbox top"></div>
+<div class="letterbox bottom"></div>
+
+<nav>
+  <div class="logo">SUNDAY · 平A之惑</div>
+  <div class="nav-links">
+    <a href="#profile">角色</a>
+    <a href="#meme">梗源</a>
+    <a href="#dialogue">对白</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-bg"></div>
+  <div class="kicker">崩坏：星穹铁道 · 角色札记</div>
+  <h1>
+    星期日
+    <span class="sub">你为什么要平A</span>
+  </h1>
+  <p class="q">那么大的招式不舍得放，偏偏要挥一记平淡无奇的普通攻击？</p>
+  <div class="scroll-hint">SCROLL</div>
+</header>
+
+<!-- 角色简介 -->
+<section id="profile">
+  <div class="glow g1"></div>
+  <div class="intro">
+    <div class="portrait reveal">
+      <div class="symbol">
+        <div class="wing">✦</div>
+        <div class="name">星 期 日</div>
+      </div>
+    </div>
+    <div>
+      <div class="chapter reveal">CHAPTER 01 · 角色档案</div>
+      <h2 class="reveal d1">圣所之首，<br><em>奥帝</em>之影。</h2>
+      <div class="intro-text">
+        <p class="reveal d2"><strong>星期日</strong>，匹诺康尼「圣所」的实际掌权者之一，奥帝的化身，操控秩序与梦境的<strong>同谐</strong>使者。</p>
+        <p class="reveal d2">他自诩秩序的化身，将一切混乱与无序视作需要被净化的尘埃。他的招式华丽庄严，战技与终结技皆是震撼天地的<strong>神威</strong>。</p>
+        <div class="quote reveal d3">
+          秩序，是慈悲的另一种形态。<br>
+          混乱，则是被允许的罪。
+        </div>
+        <p class="reveal d4">然而，就是这样一位站在秩序顶点的<strong>神</strong>，在某场战斗里——平A了。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 梗的解析 -->
+<section id="meme">
+  <div class="glow g2"></div>
+  <div class="chapter reveal">CHAPTER 02 · 梗之解析</div>
+  <h2 class="reveal d1">所以，<em>为什么</em>要平A？</h2>
+  <div class="meme-grid">
+    <article class="meme-card reveal d1">
+      <div class="num">I.</div>
+      <span class="tag">设定崩坏</span>
+      <h4>神也要省点技能点？</h4>
+      <p>堂堂秩序之神，掌握「同谐」之力，掌控万千梦境，结果关键时刻——一记普通攻击打过去。玩家：秩序就是这样的吗？</p>
+    </article>
+    <article class="meme-card reveal d2">
+      <div class="num">II.</div>
+      <span class="tag">玩家绝望</span>
+      <h4>我的战技点呢？</h4>
+      <p>队伍战技点耗尽，星穹列车组全员残血，结果轮到星期日出手——平A。崩铁玩家集体破防：「这不是Boss该有的样子！」</p>
+    </article>
+    <article class="meme-card reveal d3">
+      <div class="num">III.</div>
+      <span class="tag">名场面</span>
+      <h4>第一次也是最后一次</h4>
+      <p>这是玩家第一次在主线Boss战中看到Boss主动使用普通攻击。在此之前，所有Boss都是战技+终结技连发，从无例外。</p>
+    </article>
+    <article class="meme-card reveal d4">
+      <div class="num">IV.</div>
+      <span class="tag">群嘲</span>
+      <h4>「怎么不开大？」</h4>
+      <p>「开大啊！」「我有大为什么不开？」玩家疯狂在弹幕里教学，星期日依然淡定地挥着那一记平平无奇的攻击。</p>
+    </article>
+    <article class="meme-card reveal d3">
+      <div class="num">V.</div>
+      <span class="tag">反向封神</span>
+      <h4>越平，越神</h4>
+      <p>反差感拉满。越是神级角色，越做越朴素的事，反而让这记平A成了他最深刻的<strong>角色塑造</strong>。这一A，封神。</p>
+    </article>
+    <article class="meme-card reveal d2">
+      <div class="num">VI.</div>
+      <span class="tag">永远流传</span>
+      <h4>「星期日你为什么要平A」</h4>
+      <p>从此这句话成为崩铁玩家的共同记忆。它已不再是问题，而是一句<strong>暗号</strong>，一种氛围，一段属于匹诺康尼的集体回响。</p>
+    </article>
+  </div>
+</section>
+
+<!-- 对白场景 -->
+<section id="dialogue">
+  <div class="chapter reveal">CHAPTER 03 · 战场回放</div>
+  <h2 class="reveal d1">那一<em>记</em>平A。</h2>
+  <div class="dialogue">
+    <div class="line">
+      <div class="speaker">— 开拓者</div>
+      <div class="text">他动了！星期日出手了！</div>
+    </div>
+    <div class="line">
+      <div class="speaker">— 丹恒</div>
+      <div class="text">小心，是战技还是终结技？</div>
+    </div>
+    <div class="line">
+      <div class="speaker">— 三月七</div>
+      <div class="text">那个动作……是不是有点朴素？</div>
+    </div>
+    <div class="line">
+      <div class="speaker">— 全体玩家</div>
+      <div class="text">这、这是平A？！！</div>
+    </div>
+    <div class="line">
+      <div class="speaker">— 星期日</div>
+      <div class="text">秩序，从不需要喧嚣。</div>
+    </div>
+    <div class="line">
+      <div class="speaker">— 弹幕</div>
+      <div class="text">星期日你为什么要平A！！！</div>
+    </div>
+  </div>
+</section>
+
+<!-- 收尾 -->
+<section class="finale">
+  <div class="mark">✦</div>
+  <h2>秩序，<br>从来不是喧嚣。</h2>
+  <p>That One Normal Attack · A Star Rail Memoir</p>
+</section>
+
+<footer>
+  <div class="end">— Fin —</div>
+  <p>FAN TRIBUTE · 崩坏：星穹铁道</p>
+</footer>
+
+<script>
+/* 粒子：飘落的金色光点 */
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+let w,h,particles;
+
+function resize(){
+  w = canvas.width = window.innerWidth;
+  h = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize',resize);
+
+function initParticles(){
+  const count = Math.min(80, Math.floor(w*h/24000));
+  particles = Array.from({length:count},()=>({
+    x: Math.random()*w,
+    y: Math.random()*h,
+    r: Math.random()*1.6 + 0.3,
+    vx: (Math.random()-.5)*0.12,
+    vy: Math.random()*0.28 + 0.04,
+    a: Math.random()*0.5 + 0.15,
+    hue: 40 + Math.random()*15
+  }));
+}
+initParticles();
+window.addEventListener('resize',initParticles);
+
+function draw(){
+  ctx.clearRect(0,0,w,h);
+  particles.forEach(p=>{
+    p.x += p.vx;
+    p.y += p.vy;
+    if(p.y > h){p.y = -10; p.x = Math.random()*w}
+    if(p.x < 0) p.x = w;
+    if(p.x > w) p.x = 0;
+    const g = ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*5);
+    g.addColorStop(0,`hsla(${p.hue},80%,70%,${p.a})`);
+    g.addColorStop(1,`hsla(${p.hue},80%,70%,0)`);
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,p.r*5,0,Math.PI*2);
+    ctx.fill();
+  });
+  requestAnimationFrame(draw);
+}
+draw();
+
+/* 滚动出现 */
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('in');
+      io.unobserve(e.target);
+    }
+  });
+},{threshold:0.15,rootMargin:'0px 0px -8% 0px'});
+
+document.querySelectorAll('.reveal,.line').forEach(el=>io.observe(el));
+
+/* 对白逐行 */
+const lineIO = new IntersectionObserver((entries)=>{
+  entries.forEach((e,i)=>{
+    if(e.isIntersecting){
+      setTimeout(()=>e.target.classList.add('in'),i*180);
+      lineIO.unobserve(e.target);
+    }
+  });
+},{threshold:0.4});
+document.querySelectorAll('.line').forEach(el=>lineIO.observe(el));
+
+/* 视差光晕 */
+const glows = document.querySelectorAll('.glow');
+let mx=0,my=0,cx=0,cy=0;
+window.addEventListener('mousemove',e=>{
+  mx = (e.clientX/window.innerWidth - .5);
+  my = (e.clientY/window.innerHeight - .5);
+});
+function parallax(){
+  cx += (mx-cx)*0.05;
+  cy += (my-cy)*0.05;
+  glows.forEach((g,i)=>{
+    const depth = (i+1)*30;
+    g.style.transform = `translate(${cx*depth}px,${cy*depth}px)`;
+  });
+  requestAnimationFrame(parallax);
+}
+parallax();
+
+/* Hero 标题视差 */
+const heroH1 = document.querySelector('.hero h1');
+window.addEventListener('scroll',()=>{
+  const y = window.scrollY;
+  if(y < window.innerHeight){
+    heroH1.style.transform = `translateY(${y*0.25}px)`;
+    heroH1.style.opacity = 1 - y/window.innerHeight*0.8;
+  }
+});
+</script>
+</body>
+</html>
